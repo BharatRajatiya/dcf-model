@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DCF Valuation Model | Bharat Rajatiya Finance Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--a:#1b3f6e;--ah:#25548e;--ad:rgba(27,63,110,.1);--bg:#f4f7fc;--bg2:#e9edf5;--bg3:#fff;--tx:#0d1420;--t2:#4a5568;--t3:#8898aa;--bdr:rgba(0,0,0,.08);--gr:#0f7a3c;--gr-bg:rgba(16,122,60,.09);--red:#b91c1c;--red-bg:rgba(185,28,28,.08);--am:#b45309;--am-bg:rgba(180,83,9,.08);--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+.header{background:var(--a);padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--serif);color:#fff;font-size:1.1rem;font-weight:700}
+.back{font-size:.75rem;color:rgba(255,255,255,.75)}.back:hover{color:#fff}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px}
+h1{font-family:var(--serif);font-size:clamp(1.5rem,3.5vw,2rem);font-weight:700;margin-bottom:5px}
+.sub{color:var(--t2);font-size:.87rem;margin-bottom:26px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:var(--bg3);border:1px solid var(--bdr);border-radius:12px;padding:22px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.card h3{font-size:.87rem;font-weight:600;color:var(--a);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--bdr)}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:11px}
+.fl{font-family:var(--mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--t3)}
+.fi{background:var(--bg);border:1.5px solid var(--bdr);border-radius:6px;padding:9px 12px;font-family:var(--sans);font-size:.88rem;color:var(--tx);outline:none;width:100%}
+.fi:focus{border-color:var(--a)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fcf-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.fcf-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+/* Results */
+.res-hero{background:linear-gradient(135deg,var(--a) 0%,var(--ah) 100%);border-radius:12px;padding:24px;text-align:center;margin-bottom:14px;color:#fff}
+.rh-lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:6px}
+.rh-val{font-family:var(--serif);font-size:2.2rem;font-weight:700}
+.rh-sub{font-size:.8rem;color:rgba(255,255,255,.7);margin-top:4px}
+.res-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.rb{background:var(--bg2);border-radius:9px;padding:13px;text-align:center}
+.rb-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+.rb-val{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--tx)}
+.verdict{padding:13px 15px;border-radius:8px;font-size:.82rem;line-height:1.65;margin-top:3px}
+.v-buy{background:var(--gr-bg);border-left:3px solid var(--gr);color:var(--t2)}.v-buy strong{color:var(--gr)}
+.v-sell{background:var(--red-bg);border-left:3px solid var(--red);color:var(--t2)}.v-sell strong{color:var(--red)}
+.v-hold{background:var(--am-bg);border-left:3px solid var(--am);color:var(--t2)}.v-hold strong{color:var(--am)}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+th{background:var(--a);color:#fff;padding:7px 9px;font-family:var(--mono);font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;font-weight:500;text-align:left}
+td{padding:6px 9px;border-bottom:1px solid var(--bdr);color:var(--t2)}
+tr:hover td{background:var(--bg2)}
+td:last-child{font-weight:600}
+/* sensitivity */
+.sens{overflow-x:auto;margin-top:6px}
+.sens-table{border-collapse:collapse;width:100%;font-size:.73rem}
+.sens-table th{background:var(--bg2);color:var(--t3);padding:5px 8px;font-weight:500;font-family:var(--mono);font-size:.58rem;text-align:center}
+.sens-table td{padding:5px 8px;text-align:center;border:1px solid var(--bdr);font-family:var(--mono)}
+.sens-hl{background:var(--ad);color:var(--a);font-weight:700}
+.sens-g{background:rgba(16,122,60,.08);color:var(--gr)}
+.sens-r{background:rgba(185,28,28,.07);color:var(--red)}
+.disclaimer{font-size:.7rem;color:var(--t3);line-height:1.55;padding:12px;background:var(--bg2);border-radius:6px;margin-top:14px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.fcf-grid{grid-template-columns:repeat(3,1fr)}.res-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">BR. Finance Tools</div>
+  <a href="https://bharatrajatiya.com" class="back">← bharatrajatiya.com</a>
+</div>
+<div class="wrap">
+  <h1>DCF Valuation Model</h1>
+  <p class="sub">Discounted Cash Flow analysis with sensitivity table. Built from real IB valuation experience at UBS and ABSLI.</p>
+  <div class="grid">
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <h3>Company & Assumptions</h3>
+        <div class="fg"><label class="fl">Company Name</label><input class="fi" id="cname" value="ABC Ltd." oninput="calc()"/></div>
+        <div class="row2">
+          <div class="fg"><label class="fl">WACC (%)</label><input class="fi" type="number" id="wacc" value="12" step="0.5" min="1" max="40" oninput="calc()"/></div>
+          <div class="fg"><label class="fl">Terminal Growth Rate (%)</label><input class="fi" type="number" id="tgr" value="4" step="0.5" min="0" max="15" oninput="calc()"/></div>
+        </div>
+        <div class="row2">
+          <div class="fg"><label class="fl">Net Debt (₹ Cr)</label><input class="fi" type="number" id="debt" value="500" oninput="calc()"/></div>
+          <div class="fg"><label class="fl">Shares Outstanding (Cr)</label><input class="fi" type="number" id="shares" value="10" step="0.1" min="0.1" oninput="calc()"/></div>
+        </div>
+        <div class="fg"><label class="fl">Current Market Price (₹, optional)</label><input class="fi" type="number" id="mp" value="0" oninput="calc()"/></div>
+      </div>
+      <div class="card">
+        <h3>Projected Free Cash Flows (₹ Crore)</h3>
+        <div class="fcf-grid" id="fcf-inputs"></div>
+        <div class="fg" style="margin-top:12px">
+          <label class="fl">Or use FCF Growth Rate (%) instead</label>
+          <div class="row2">
+            <input class="fi" type="number" id="base_fcf" value="200" placeholder="Base FCF (Cr)" oninput="fillFCF()"/>
+            <input class="fi" type="number" id="gr_pct" value="15" placeholder="Growth Rate %" oninput="fillFCF()"/>
+          </div>
+          <button style="margin-top:7px;background:var(--bg2);border:1px solid var(--bdr);border-radius:6px;padding:7px 12px;font-size:.78rem;color:var(--t2);cursor:pointer" onclick="fillFCF()">Auto-fill FCFs from Growth Rate</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <h3>Valuation Results</h3>
+        <div class="res-hero"><div class="rh-lbl">Intrinsic Value Per Share</div><div class="rh-val" id="ivps">—</div><div class="rh-sub" id="ivps-sub">Based on DCF analysis</div></div>
+        <div class="res-grid">
+          <div class="rb"><div class="rb-lbl">Enterprise Value</div><div class="rb-val" id="ev">—</div></div>
+          <div class="rb"><div class="rb-lbl">Equity Value</div><div class="rb-val" id="eqv">—</div></div>
+          <div class="rb"><div class="rb-lbl">PV of FCFs</div><div class="rb-val" id="pvfcf">—</div></div>
+          <div class="rb"><div class="rb-lbl">Terminal Value (PV)</div><div class="rb-val" id="tv">—</div></div>
+        </div>
+        <div class="verdict" id="verdict"></div>
+        <div class="disclaimer">⚠ This tool is for educational purposes only. DCF valuations are sensitive to assumptions. Always conduct thorough due diligence before any investment decision.</div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <h3>Cash Flow Breakdown</h3>
+        <div style="overflow-x:auto"><table id="cf-table"><thead><tr><th>Year</th><th>FCF (₹Cr)</th><th>Discount Factor</th><th>PV of FCF (₹Cr)</th></tr></thead><tbody id="cf-body"></tbody></table></div>
+      </div>
+      <div class="card">
+        <h3>Sensitivity Analysis — Intrinsic Value (₹)</h3>
+        <p style="font-size:.75rem;color:var(--t3);margin-bottom:8px">WACC (rows) vs Terminal Growth Rate (cols)</p>
+        <div class="sens"><table class="sens-table" id="sens-table"></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const fcfVals=[200,230,265,304,350];
+function buildFCFInputs(){
+  let h='';
+  for(let i=0;i<5;i++){
+    h+=`<div><div class="fcf-lbl">Year ${i+1}</div><input class="fi" type="number" id="fcf${i}" value="${fcfVals[i]}" step="10" oninput="fcfVals[${i}]=+this.value;calc()"/></div>`;
+  }
+  document.getElementById('fcf-inputs').innerHTML=h;
+}
+function fillFCF(){
+  const base=+document.getElementById('base_fcf').value||200;
+  const gr=+document.getElementById('gr_pct').value/100||0.15;
+  for(let i=0;i<5;i++){
+    fcfVals[i]=Math.round(base*Math.pow(1+gr,i));
+    const el=document.getElementById('fcf'+i);
+    if(el)el.value=fcfVals[i];
+  }
+  calc();
+}
+function fmtCr(n){return'₹'+(n>=1000?(n/1000).toFixed(1)+'K Cr':n.toFixed(1)+' Cr');}
+function fmtSh(n){return'₹'+n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function calcDCF(fcfs,wacc,tgr){
+  const w=wacc/100,t=tgr/100;
+  let pvFCF=0;
+  const rows=[];
+  fcfs.forEach((fcf,i)=>{
+    const y=i+1;const df=1/Math.pow(1+w,y);const pv=fcf*df;
+    pvFCF+=pv;rows.push({y,fcf,df,pv});
+  });
+  const lastFCF=fcfs[fcfs.length-1];
+  const tv=lastFCF*(1+t)/(w-t)/Math.pow(1+w,5);
+  const ev=pvFCF+tv;
+  return{pvFCF,tv,ev,rows};
+}
+function calc(){
+  for(let i=0;i<5;i++){const el=document.getElementById('fcf'+i);if(el)fcfVals[i]=+el.value||0;}
+  const wacc=+document.getElementById('wacc').value||12;
+  const tgr=+document.getElementById('tgr').value||4;
+  const debt=+document.getElementById('debt').value||0;
+  const shares=+document.getElementById('shares').value||1;
+  const mp=+document.getElementById('mp').value||0;
+  if(wacc<=tgr){document.getElementById('ivps').textContent='Invalid';document.getElementById('ivps-sub').textContent='WACC must be greater than Terminal Growth Rate';return;}
+  const {pvFCF,tv,ev,rows}=calcDCF(fcfVals,wacc,tgr);
+  const equity=ev-debt;
+  const ivps=equity/shares;
+  document.getElementById('ivps').textContent=fmtSh(ivps);
+  document.getElementById('ev').textContent=fmtCr(ev);
+  document.getElementById('eqv').textContent=fmtCr(equity);
+  document.getElementById('pvfcf').textContent=fmtCr(pvFCF);
+  document.getElementById('tv').textContent=fmtCr(tv);
+  // CF table
+  let tbody='';
+  rows.forEach(r=>{tbody+=`<tr><td>Year ${r.y}</td><td>₹${r.fcf.toLocaleString()}</td><td>${r.df.toFixed(4)}</td><td>₹${r.pv.toFixed(1)}</td></tr>`;});
+  tbody+=`<tr style="font-weight:700;background:var(--bg2)"><td>Terminal</td><td colspan="2">Gordon Growth Model</td><td>₹${tv.toFixed(1)}</td></tr>`;
+  document.getElementById('cf-body').innerHTML=tbody;
+  // verdict
+  let vdict='',vcls='v-hold';
+  if(mp>0){
+    const mos=(ivps-mp)/ivps*100;
+    if(mos>20){vcls='v-buy';vdict=`<strong>Potentially Undervalued (+${mos.toFixed(1)}% margin of safety)</strong> — Intrinsic value ${fmtSh(ivps)} vs market price ₹${mp}. Consider deeper due diligence.`;}
+    else if(mos<-20){vcls='v-sell';vdict=`<strong>Potentially Overvalued (${mos.toFixed(1)}% premium)</strong> — Market price ₹${mp} exceeds intrinsic value ${fmtSh(ivps)}. Risk of downside.`;}
+    else{vcls='v-hold';vdict=`<strong>Fairly Valued (${mos.toFixed(1)}%)</strong> — Market price ₹${mp} is close to intrinsic value ${fmtSh(ivps)}. Limited margin of safety.`;}
+    document.getElementById('ivps-sub').textContent=`Market Price: ₹${mp} · Margin of Safety: ${mos.toFixed(1)}%`;
+  } else {
+    vcls='v-hold';vdict=`<strong>Intrinsic Value: ${fmtSh(ivps)}</strong> — Enter a market price above to see margin of safety analysis.`;
+    document.getElementById('ivps-sub').textContent='Enter market price to see margin of safety';
+  }
+  document.getElementById('verdict').className='verdict '+vcls;
+  document.getElementById('verdict').innerHTML=vdict;
+  // sensitivity
+  const waccRange=[wacc-3,wacc-1.5,wacc,wacc+1.5,wacc+3];
+  const tgrRange=[tgr-2,tgr-1,tgr,tgr+1,tgr+2].filter(t=>t>=0&&t<wacc-1);
+  let sHtml='<thead><tr><th>WACC \\ TGR</th>';
+  tgrRange.forEach(t=>sHtml+=`<th>${t.toFixed(1)}%</th>`);
+  sHtml+='</tr></thead><tbody>';
+  waccRange.forEach(w=>{
+    if(w<=0)return;
+    sHtml+=`<tr><th>${w.toFixed(1)}%</th>`;
+    tgrRange.forEach(t=>{
+      if(w<=t){sHtml+='<td>—</td>';return;}
+      const {ev:ev2}=calcDCF(fcfVals,w,t);
+      const iv2=(ev2-debt)/shares;
+      const isBase=Math.abs(w-wacc)<0.01&&Math.abs(t-tgr)<0.01;
+      const isBetter=mp>0?iv2>mp:false;
+      const isBad=mp>0?iv2<mp:false;
+      const cls=isBase?'sens-hl':isBetter?'sens-g':isBad?'sens-r':'';
+      sHtml+=`<td class="${cls}">${fmtSh(iv2)}</td>`;
+    });
+    sHtml+='</tr>';
+  });
+  sHtml+='</tbody>';
+  document.getElementById('sens-table').innerHTML=sHtml;
+}
+buildFCFInputs();calc();
+</script>
+</body>
+</html>
